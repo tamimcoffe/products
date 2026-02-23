@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>نظام الجرد - تصميم متوازن</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+        body {
+            background: linear-gradient(145deg, #f8fcff 0%, #edf4fd 100%);
+            padding: 12px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* الهيدر */
+        .header {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(12px);
+            border-radius: clamp(24px, 5vw, 32px);
+            padding: clamp(16px, 4vw, 24px);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 8px 32px rgba(0, 30, 60, 0.06);
+        }
+
+        h1 {
+            font-size: clamp(22px, 6vw, 28px);
+            font-weight: 800;
+            color: #0a2942;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #1a3a5e, #254e7a);
+            color: white;
+            font-size: clamp(11px, 3vw, 13px);
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #3e5e7e;
+            font-size: clamp(13px, 3.5vw, 14px);
+            font-weight: 500;
+        }
+
+        /* شريط الحالة */
+        .status-bar {
+            background: white;
+            border-radius: 30px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(37,78,122,0.12);
+            box-shadow: 0 4px 12px rgba(0,20,40,0.03);
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: #1a3a5e;
+            font-size: clamp(13px, 3.5vw, 14px);
+        }
+
+        .status-badge {
+            background: #e4edf7;
+            padding: 4px 14px;
+            border-radius: 40px;
+            color: #1a3a5e;
+            font-weight: 700;
+            font-size: clamp(12px, 3vw, 14px);
+        }
+
+        /* فلتر */
+        .filter-section {
+            background: white;
+            border-radius: 30px;
+            padding: 4px 12px 4px 4px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(37,78,122,0.15);
+            box-shadow: 0 6px 16px rgba(0,30,60,0.04);
+        }
+
+        .filter-icon {
+            background: #e7f0fa;
+            width: clamp(40px, 10vw, 44px);
+            height: clamp(40px, 10vw, 44px);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(18px, 5vw, 20px);
+            color: #1a3a5e;
+            flex-shrink: 0;
+        }
+
+        .filter-select {
+            flex: 1;
+            padding: 10px 6px;
+            border: none;
+            background: transparent;
+            font-size: clamp(14px, 4vw, 16px);
+            font-weight: 600;
+            color: #0a2942;
+            cursor: pointer;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="%231a3a5e" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: left center;
+            background-size: 18px;
+            min-width: 0;
+        }
+
+        .filter-select:focus {
+            outline: none;
+        }
+
+        /* بطاقة المنتج - تلوين متبادل */
+        .product-card {
+            border-radius: 28px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(37,78,122,0.1);
+            box-shadow: 0 6px 16px rgba(0,20,40,0.02);
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .product-card.row-0 {
+            background: #ffffff;
+        }
+        
+        .product-card.row-1 {
+            background: #f4faff;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(26,58,94,0.08);
+            border-color: rgba(37,78,122,0.2);
+        }
+
+        /* الصف العلوي: الاسم والكمية */
+        .product-row-1 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .product-name {
+            font-size: clamp(16px, 5vw, 20px);
+            font-weight: 800;
+            color: #0a2942;
+            background: rgba(255,255,255,0.7);
+            padding: 6px 18px;
+            border-radius: 50px;
+            border: 1px solid #c4d6ed;
+            flex: 1;
+            min-width: 140px;
+            word-break: break-word;
+        }
+
+        .quantity-badge {
+            background: linear-gradient(145deg, #1a3a5e, #254e7a);
+            color: white;
+            font-weight: 800;
+            font-size: clamp(20px, 6vw, 24px);
+            padding: 6px 20px;
+            border-radius: 60px;
+            min-width: 90px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(37,78,122,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+
+        /* الصف الثاني: عناصر التحكم المتوازنة */
+        .product-row-2 {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .input-field {
+            flex: 2.5; /* تصغير الحقل قليلاً */
+            min-width: 100px;
+            padding: 10px 12px; /* تصغير padding */
+            border: 2px solid #dae3f0;
+            border-radius: 50px;
+            font-size: clamp(13px, 3.8vw, 15px);
+            font-weight: 600;
+            text-align: center;
+            direction: ltr;
+            background: #ffffff;
+        }
+
+        .input-field:focus {
+            border-color: #254e7a;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37,78,122,0.1);
+        }
+
+        .save-btn {
+            flex: 1.5;
+            min-width: 70px;
+            background: linear-gradient(145deg, #1a3a5e, #254e7a);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: clamp(13px, 3.8vw, 15px);
+            font-weight: 700;
+            padding: 10px 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(37,78,122,0.2);
+            white-space: nowrap;
+        }
+
+        .save-btn:active {
+            transform: scale(0.96);
+        }
+
+        .edit-small-btn {
+            flex: 0.8;
+            min-width: 45px;
+            background: #e7f0fa;
+            border: 1px solid #c4d6ed;
+            color: #1a3a5e;
+            border-radius: 50px;
+            font-size: clamp(13px, 3.8vw, 15px);
+            font-weight: 700;
+            padding: 10px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            white-space: nowrap;
+        }
+
+        .edit-small-btn:active {
+            background: #d4e2f5;
+            transform: scale(0.96);
+        }
+
+        .delete-btn {
+            flex: 0.8;
+            min-width: 45px;
+            background: #feecec;
+            border: 1px solid #fccfcf;
+            color: #b13e3e;
+            border-radius: 50px;
+            font-size: clamp(13px, 3.8vw, 15px);
+            font-weight: 700;
+            padding: 10px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            white-space: nowrap;
+        }
+
+        .delete-btn:active {
+            background: #ffdddd;
+            transform: scale(0.96);
+        }
+
+        /* نافذة التعديل الكامل */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,20,40,0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+            padding: 16px;
+        }
+
+        .modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 40px;
+            padding: 28px 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 30px 50px rgba(0,30,60,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .modal-box h3 {
+            margin-bottom: 24px;
+            color: #0a2942;
+            font-size: clamp(20px, 6vw, 24px);
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .modal-box input,
+        .modal-box select {
+            width: 100%;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            border: 2px solid #dae3f0;
+            border-radius: 50px;
+            font-size: 16px;
+        }
+
+        .modal-box input:focus,
+        .modal-box select:focus {
+            border-color: #254e7a;
+            outline: none;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .modal-save {
+            background: #1a3a5e;
+            color: white;
+        }
+
+        .modal-cancel {
+            background: #e7f0fa;
+            color: #1e293b;
+        }
+
+        /* زر الإضافة والتصفير */
+        .add-button {
+            width: 100%;
+            background: white;
+            border: 2px dashed #254e7a;
+            color: #1a3a5e;
+            font-size: clamp(16px, 4.5vw, 18px);
+            font-weight: 700;
+            padding: 16px 20px;
+            border-radius: 50px;
+            margin: 16px 0 8px 0;
+            cursor: pointer;
+        }
+
+        .add-button:active {
+            background: #f0f7ff;
+            transform: scale(0.98);
+        }
+
+        .reset-button {
+            width: 100%;
+            background: #feecec;
+            border: 2px solid #fccfcf;
+            color: #b13e3e;
+            font-size: clamp(16px, 4.5vw, 18px);
+            font-weight: 700;
+            padding: 16px 20px;
+            border-radius: 50px;
+            margin: 8px 0 16px 0;
+            cursor: pointer;
+        }
+
+        .reset-button:active {
+            background: #ffdddd;
+            transform: scale(0.98);
+        }
+
+        /* نموذج الإضافة */
+        .add-form {
+            background: white;
+            border-radius: 36px;
+            padding: 24px;
+            margin: 16px 0;
+            border: 1px solid #c4d6ed;
+        }
+
+        .add-form h3 {
+            margin-bottom: 20px;
+            color: #0a2942;
+            font-size: clamp(18px, 5vw, 22px);
+            font-weight: 800;
+        }
+
+        .add-form input,
+        .add-form select {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border: 2px solid #dae3f0;
+            border-radius: 50px;
+            font-size: 15px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .save-new {
+            background: #1a3a5e;
+            color: white;
+        }
+
+        .cancel-new {
+            background: #e7f0fa;
+            color: #1e293b;
+        }
+
+        /* نافذة الرقم السري */
+        .popup-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,20,40,0.6);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+            padding: 16px;
+        }
+
+        .popup-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .popup-box {
+            background: white;
+            border-radius: 48px;
+            padding: 28px 24px;
+            width: 90%;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .popup-box h3 {
+            margin-bottom: 20px;
+            color: #0a2942;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .popup-box input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #dae3f0;
+            border-radius: 50px;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            direction: ltr;
+        }
+
+        .popup-box input:focus {
+            border-color: #254e7a;
+            outline: none;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .popup-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .popup-confirm {
+            background: #b13e3e;
+            color: white;
+        }
+
+        .popup-cancel {
+            background: #e7f0fa;
+            color: #334155;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                📋 جرد المخزون
+                <span>v3.0</span>
+            </h1>
+            <div class="subtitle">
+                نظام إدارة متطور
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <span class="status-text" id="status">🔄 جاري التحميل...</span>
+            <span class="status-badge" id="productCount">0</span>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-icon">🔍</div>
+            <select id="categoryFilter" class="filter-select" onchange="applyFilter()">
+                <option value="all">📦 جميع الأصناف</option>
+            </select>
+        </div>
+
+        <div id="productsList"></div>
+
+        <button class="add-button" onclick="toggleAddForm()">➕ إضافة صنف جديد</button>
+        <button class="reset-button" onclick="openResetPopup()">🔄 تصفير جميع الكميات</button>
+
+        <!-- نموذج الإضافة -->
+        <div id="addForm" class="add-form" style="display: none;">
+            <h3>➕ إضافة صنف جديد</h3>
+            <input type="text" id="newName" placeholder="اسم الصنف">
+            <select id="newCategory">
+			<option value="بن">☕ بن</option>
+			<option value="اسبريسو">اسبريسو</option>
+			<option value="اوستربرج">اوستربرج</option>
+			<option value="صولو">صولو</option>
+			<option value="مونين">مونين</option>
+			<option value="بريفا">بريفا</option>
+			<option value="د.بيكر">د.بيكر</option>
+			<option value="لازت">لازت</option>
+			<option value="أجبان">🧀 أجبان</option>
+			<option value="معلبات">🥫 معلبات</option>
+			<option value="ماركت">🧃 ماركت</option>
+			<option value="أخرى">📦 أخرى</option>
+		</select>
+            <div style="display: flex; gap: 8px;">
+                <input type="number" id="newQty" placeholder="الكمية" value="0" step="0.1">
+            </div>
+            <div class="form-buttons">
+                <button class="save-new" onclick="addNewProduct()">💾 حفظ</button>
+                <button class="cancel-new" onclick="toggleAddForm()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التعديل الكامل -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>✏️ تعديل البيانات</h3>
+            <input type="text" id="editName" placeholder="اسم الصنف">
+            <select id="editCategory">
+                <option value="بن">☕ بن</option>
+                <option value="ألبان">🥛 ألبان</option>
+                <option value="أجبان">🧀 أجبان</option>
+                <option value="معلبات">🥫 معلبات</option>
+                <option value="مشروبات">🧃 مشروبات</option>
+                <option value="أخرى">📦 أخرى</option>
+            </select>
+            <div style="display: flex; gap: 8px;">
+                <input type="number" id="editQty" placeholder="الكمية" step="0.1">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-save" onclick="saveFullEdit()">💾 حفظ التعديلات</button>
+                <button class="modal-cancel" onclick="closeEditModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الرقم السري (للحذف) -->
+    <div id="passwordPopup" class="popup-overlay">
+        <div class="popup-box">
+            <h3>🔐 تأكيد الحذف</h3>
+            <input type="password" id="passwordInput" placeholder="الرقم السري" inputmode="numeric" maxlength="4">
+            <div class="popup-buttons">
+                <button class="popup-confirm" onclick="confirmDelete()">حذف</button>
+                <button class="popup-cancel" onclick="closePasswordPopup()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الرقم السري (للتصفير) -->
+    <div id="resetPopup" class="popup-overlay">
+        <div class="popup-box">
+            <h3>🔐 تصفير الكل</h3>
+            <input type="password" id="resetPasswordInput" placeholder="الرقم السري" inputmode="numeric" maxlength="4">
+            <div class="popup-buttons">
+                <button class="popup-confirm" onclick="confirmResetAll()">تصفير</button>
+                <button class="popup-cancel" onclick="closeResetPopup()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FIREBASE_URL = 'https://products-92b1e-default-rtdb.firebaseio.com';
+        const SECRET_PASSWORD = '1979';
+        
+        let allProducts = [];
+        let currentFilter = 'all';
+        let pendingDeleteId = null;
+        let currentEditId = null;
+
+        // تحميل المنتجات
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${FIREBASE_URL}/products.json`);
+                const data = await res.json();
+                allProducts = data ? Object.entries(data).map(([id, p]) => ({ id, ...p })) : [];
+                updateFilterOptions();
+                applyFilter();
+                document.getElementById('status').innerHTML = `✅ متصل بنجاح`;
+                document.getElementById('productCount').innerHTML = `${allProducts.length} صنف`;
+            } catch (e) {
+                document.getElementById('status').innerHTML = '❌ خطأ في الاتصال';
+                document.getElementById('productCount').innerHTML = '0';
+            }
+        }
+
+        // تحديث خيارات الفلتر
+        function updateFilterOptions() {
+            const categories = ['all', ...new Set(allProducts.map(p => p.category || 'أخرى'))];
+            const select = document.getElementById('categoryFilter');
+            select.innerHTML = categories.map(cat => 
+                `<option value="${cat}" ${currentFilter === cat ? 'selected' : ''}>${cat === 'all' ? '📦 جميع الأصناف' : cat}</option>`
+            ).join('');
+        }
+
+        // تطبيق الفلتر
+        window.applyFilter = () => {
+            currentFilter = document.getElementById('categoryFilter').value;
+            const filtered = currentFilter === 'all' ? allProducts : allProducts.filter(p => (p.category || 'أخرى') === currentFilter);
+            renderProducts(filtered);
+        };
+
+        // عرض المنتجات مع تلوين متبادل
+        function renderProducts(products) {
+            const container = document.getElementById('productsList');
+            if (products.length === 0) {
+                container.innerHTML = '<div style="background: white; border-radius: 40px; padding: 30px; text-align: center; color: #4b6b8f;">📭 لا توجد أصناف</div>';
+                return;
+            }
+
+            let html = '';
+            products.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+            
+            products.forEach((p, index) => {
+                const rowClass = `row-${index % 2}`;
+                html += `
+                    <div class="product-card ${rowClass}" id="product-${p.id}">
+                        <div class="product-row-1">
+                            <span class="product-name" id="name-${p.id}">
+                                ${p.name || 'منتج'}
+                            </span>
+                            <span class="quantity-badge" id="qty-${p.id}">${p.quantity ?? 0}</span>
+                        </div>
+                        
+                        <div class="product-row-2">
+                            <input type="number" id="input-${p.id}" class="input-field" value="${p.quantity ?? 0}" step="0.1" placeholder="الكمية">
+                            <button class="save-btn" onclick="updateProduct('${p.id}')">حفظ</button>
+                            <button class="edit-small-btn" onclick="openEditModal('${p.id}')">✏️</button>
+                            <button class="delete-btn" onclick="openPasswordPopup('${p.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // تحديث الكمية
+        window.updateProduct = async (id) => {
+            const input = document.getElementById(`input-${id}`);
+            const newQty = parseFloat(input.value) || 0;
+            
+            await fetch(`${FIREBASE_URL}/products/${id}.json`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantity: newQty })
+            });
+            
+            const product = allProducts.find(p => p.id === id);
+            if (product) product.quantity = newQty;
+            
+            document.getElementById(`qty-${id}`).innerText = newQty;
+        };
+
+        // نافذة التعديل الكامل
+        window.openEditModal = (id) => {
+            const product = allProducts.find(p => p.id === id);
+            if (!product) return;
+            
+            currentEditId = id;
+            document.getElementById('editName').value = product.name || '';
+            document.getElementById('editCategory').value = product.category || 'أخرى';
+            document.getElementById('editQty').value = product.quantity || 0;
+            
+            document.getElementById('editModal').classList.add('show');
+        };
+
+        window.closeEditModal = () => {
+            document.getElementById('editModal').classList.remove('show');
+            currentEditId = null;
+        };
+
+        window.saveFullEdit = async () => {
+            if (!currentEditId) return;
+            
+            const updatedData = {
+                name: document.getElementById('editName').value.trim(),
+                category: document.getElementById('editCategory').value,
+                quantity: parseFloat(document.getElementById('editQty').value) || 0
+            };
+
+            if (!updatedData.name) {
+                alert('الرجاء إدخال اسم الصنف');
+                return;
+            }
+
+            await fetch(`${FIREBASE_URL}/products/${currentEditId}.json`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+
+            const product = allProducts.find(p => p.id === currentEditId);
+            if (product) {
+                product.name = updatedData.name;
+                product.category = updatedData.category;
+                product.quantity = updatedData.quantity;
+            }
+
+            closeEditModal();
+            applyFilter();
+        };
+
+        // دوال الحذف
+        window.openPasswordPopup = (id) => {
+            pendingDeleteId = id;
+            document.getElementById('passwordPopup').classList.add('show');
+            document.getElementById('passwordInput').value = '';
+        };
+        window.closePasswordPopup = () => {
+            document.getElementById('passwordPopup').classList.remove('show');
+            pendingDeleteId = null;
+        };
+        window.confirmDelete = async () => {
+            if (document.getElementById('passwordInput').value !== SECRET_PASSWORD) {
+                alert('❌ الرقم السري خطأ');
+                return;
+            }
+            if (!pendingDeleteId) return;
+            await fetch(`${FIREBASE_URL}/products/${pendingDeleteId}.json`, { method: 'DELETE' });
+            allProducts = allProducts.filter(p => p.id !== pendingDeleteId);
+            updateFilterOptions();
+            applyFilter();
+            document.getElementById('productCount').innerHTML = `${allProducts.length} صنف`;
+            closePasswordPopup();
+        };
+
+        // دوال التصفير
+        window.openResetPopup = () => {
+            document.getElementById('resetPopup').classList.add('show');
+            document.getElementById('resetPasswordInput').value = '';
+        };
+        window.closeResetPopup = () => {
+            document.getElementById('resetPopup').classList.remove('show');
+        };
+        
+        window.confirmResetAll = async () => {
+            if (document.getElementById('resetPasswordInput').value !== SECRET_PASSWORD) {
+                alert('❌ الرقم السري خطأ');
+                return;
+            }
+
+            const updatePromises = allProducts.map(product => {
+                return fetch(`${FIREBASE_URL}/products/${product.id}.json`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quantity: 0 })
+                });
+            });
+
+            await Promise.all(updatePromises);
+            
+            allProducts = allProducts.map(p => ({ ...p, quantity: 0 }));
+            
+            applyFilter();
+            closeResetPopup();
+            document.getElementById('status').innerHTML = '✅ تم تصفير الكل';
+        };
+
+        // إضافة صنف جديد
+        window.addNewProduct = async () => {
+            const name = document.getElementById('newName').value.trim();
+            const category = document.getElementById('newCategory').value;
+            const qty = parseFloat(document.getElementById('newQty').value) || 0;
+
+            if (!name) {
+                alert('الرجاء إدخال اسم الصنف');
+                return;
+            }
+
+            const newProduct = {
+                name: name,
+                category: category,
+                quantity: qty,
+                unit: 'كجم',
+                created: new Date().toISOString()
+            };
+
+            try {
+                await fetch(`${FIREBASE_URL}/products.json`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProduct)
+                });
+
+                toggleAddForm();
+                document.getElementById('newName').value = '';
+                document.getElementById('newQty').value = '0';
+                loadProducts();
+                
+            } catch (e) {
+                alert('فشل إضافة الصنف: ' + e.message);
+            }
+        };
+
+        window.toggleAddForm = () => {
+            const f = document.getElementById('addForm');
+            f.style.display = f.style.display === 'none' ? 'block' : 'none';
+        };
+
+        loadProducts();
+    </script>
+</body>
+</html>
